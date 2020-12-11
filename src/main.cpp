@@ -5244,6 +5244,12 @@ bool CheckBlock(int32_t *futureblockp,int32_t height,CBlockIndex *pindex,const C
             return state.DoS(100, error("CheckBlock: more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
+     // If this is initial block download and "fastsync" is set, we'll skip verifying the transactions
+     if (IsInitialBlockDownload() && GetBoolArg("-fastsync", false)) {
+         //LogPrintf("fastsync: Skipping tx checks\n");
+         return true;
+     }
+
     // Check transactions
     CTransaction sTx;
     CTransaction *ptx = NULL;
