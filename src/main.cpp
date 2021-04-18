@@ -87,6 +87,7 @@ int32_t komodo_block2pubkey33(uint8_t *pubkey33,CBlock *block);
 //void komodo_broadcast(CBlock *pblock,int32_t limit);
 bool Getscriptaddress(char *destaddr,const CScript &scriptPubKey);
 void komodo_setactivation(int32_t height);
+void komodo_setzip212(int32_t height);
 void komodo_pricesupdate(int32_t height,CBlock *pblock);
 
 BlockMap mapBlockIndex;
@@ -4245,6 +4246,69 @@ int32_t komodo_activate_sapling(CBlockIndex *pindex)
     return activation;
 }
 
+int32_t komodo_activate_zip212(CBlockIndex *pindex)
+{
+    uint32_t blocktime,prevtime; CBlockIndex *prev; int32_t i,transition=0,height,prevht;
+    int32_t activation = 0;
+    if ( pindex == 0 )
+    {
+        fprintf(stderr,"komodo_activate_zip212 null pindex\n");
+        return(0);
+    }
+    height = pindex->GetHeight();
+    blocktime = (uint32_t)pindex->nTime;
+    //fprintf(stderr,"komodo_activate_sapling.%d starting blocktime %u cmp.%d\n",height,blocktime,blocktime > KOMODO_SAPLING_ACTIVATION);
+
+    // avoid trying unless we have at least 30 blocks
+    if (height < 30)
+        return(0);
+
+    for (i=0; i<30; i++)
+    {
+        if ( (prev= pindex->pprev) == 0 )
+            break;
+        pindex = prev;
+    }
+    if ( i != 30 )
+    {
+        fprintf(stderr,"couldnt go backwards 30 blocks\n");
+        return(0);
+    }
+    height = pindex->GetHeight();
+    blocktime = (uint32_t)pindex->nTime;
+    //fprintf(stderr,"starting blocktime %u cmp.%d\n",blocktime,blocktime > KOMODO_ZIP212_ACTIVATION);
+    if ( blocktime > KOMODO_ZIP212_ACTIVATION ) // find the earliest transition
+    {
+        while ( (prev= pindex->pprev) != 0 )
+        {
+            prevht = prev->GetHeight();
+            prevtime = (uint32_t)prev->nTime;
+            //fprintf(stderr,"(%d, %u).%d -> (%d, %u).%d\n",prevht,prevtime,prevtime > KOMODO_ZIP212_ACTIVATION,height,blocktime,blocktime > KOMODO_ZIP212_ACTIVATION);
+            if ( prevht+1 != height )
+            {
+                fprintf(stderr,"komodo_activate_sapling: unexpected non-contiguous ht %d vs %d\n",prevht,height);
+                return(0);
+            }
+            if ( prevtime <= KOMODO_ZIP212_ACTIVATION && blocktime > KOMODO_ZIP212_ACTIVATION )
+            {
+                activation = height + 60;
+                fprintf(stderr,"%s transition at %d (%d, %u) -> (%d, %u)\n",ASSETCHAINS_SYMBOL,height,prevht,prevtime,height,blocktime);
+            }
+            if ( prevtime < KOMODO_ZIP212_ACTIVATION-3600*24 )
+                break;
+            pindex = prev;
+            height = prevht;
+            blocktime = prevtime;
+        }
+    }
+    if ( activation != 0 )
+    {
+        komodo_setzip212(activation);
+        fprintf(stderr,"%s sapling activation at %d\n",ASSETCHAINS_SYMBOL,activation);
+        ASSETCHAINS_ZIP212 = activation;
+    }
+    return activation;
+}
 static int64_t nTimeReadFromDisk = 0;
 static int64_t nTimeConnectTotal = 0;
 static int64_t nTimeFlush = 0;
@@ -4357,6 +4421,8 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
             komodo_pricesupdate(pindexNew->GetHeight(),pblock);
         if ( ASSETCHAINS_SAPLING <= 0 && pindexNew->nTime > KOMODO_SAPLING_ACTIVATION - 24*3600 )
             komodo_activate_sapling(pindexNew);
+        if ( ASSETCHAINS_PRIVATE == 1 && ASSETCHAINS_ZIP212 <= 0 && pindexNew->nTime > KOMODO_ZIP212_ACTIVATION - 24*3600 )
+            komodo_activate_zip212(pindexNew);
         if ( ASSETCHAINS_CC != 0 && KOMODO_SNAPSHOT_INTERVAL != 0 && (pindexNew->GetHeight() % KOMODO_SNAPSHOT_INTERVAL) == 0 && pindexNew->GetHeight() >= KOMODO_SNAPSHOT_INTERVAL )
         {
             uint64_t start = time(NULL);

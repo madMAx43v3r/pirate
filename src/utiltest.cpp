@@ -167,24 +167,20 @@ void RegtestDeactivateSapling() {
 }
 
 
-const Consensus::Params& RegtestActivateCanopy(bool updatePow, int canopyActivationHeight) {
+const Consensus::Params& RegtestActivateZip212(int zip212ActivationHeight) {
     SelectParams(CBaseChainParams::REGTEST);
     UpdateNetworkUpgradeParameters(Consensus::UPGRADE_OVERWINTER, Consensus::NetworkUpgrade::ALWAYS_ACTIVE);
     UpdateNetworkUpgradeParameters(Consensus::UPGRADE_SAPLING, Consensus::NetworkUpgrade::ALWAYS_ACTIVE);
-    UpdateNetworkUpgradeParameters(Consensus::UPGRADE_CANOPY, canopyActivationHeight);
-    if (updatePow) {
-        UpdateRegtestPow(32, 16, uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-    }
+    UpdateNetworkUpgradeParameters(Consensus::UPGRADE_ZIP212, zip212ActivationHeight);
     return Params().GetConsensus();
 }
 
-const Consensus::Params& RegtestActivateCanopy() {
-    return RegtestActivateCanopy(false, Consensus::NetworkUpgrade::ALWAYS_ACTIVE);
+const Consensus::Params& RegtestActivateZip212() {
+    return RegtestActivateZip212(Consensus::NetworkUpgrade::ALWAYS_ACTIVE);
 }
 
-void RegtestDeactivateCanopy() {
-    UpdateRegtestPow(0, 0, uint256S("0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"));
-    UpdateNetworkUpgradeParameters(Consensus::UPGRADE_CANOPY, Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT);
+void RegtestDeactivateZip212() {
+    UpdateNetworkUpgradeParameters(Consensus::UPGRADE_ZIP212, Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT);
     UpdateNetworkUpgradeParameters(Consensus::UPGRADE_SAPLING, Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT);
     UpdateNetworkUpgradeParameters(Consensus::UPGRADE_OVERWINTER, Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT);
     SelectParams(CBaseChainParams::MAIN);

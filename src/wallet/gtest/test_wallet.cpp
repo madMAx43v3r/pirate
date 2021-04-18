@@ -359,8 +359,8 @@ TEST(WalletTests, SetSaplingNoteAddrsInCWalletTx) {
     SelectParams(CBaseChainParams::REGTEST);
 
     std::vector<libzcash::Zip212Enabled> zip_212_enabled = {libzcash::Zip212Enabled::BeforeZip212, libzcash::Zip212Enabled::AfterZip212};
-    const Consensus::Params& (*activations [])() = {RegtestActivateSapling, RegtestActivateCanopy};
-    void (*deactivations [])() = {RegtestDeactivateSapling, RegtestDeactivateCanopy};
+    const Consensus::Params& (*activations [])() = {RegtestActivateSapling, RegtestActivateZip212};
+    void (*deactivations [])() = {RegtestDeactivateSapling, RegtestDeactivateZip212};
 
     for (int ver = 0; ver < zip_212_enabled.size(); ver++) {
         auto consensusParams = (*activations[ver])();
@@ -670,8 +670,8 @@ TEST(WalletTests, GetConflictedSaplingNotes) {
     SelectParams(CBaseChainParams::REGTEST);
 
     std::vector<libzcash::Zip212Enabled> zip_212_enabled = {libzcash::Zip212Enabled::BeforeZip212, libzcash::Zip212Enabled::AfterZip212};
-    const Consensus::Params& (*activations [])() = {RegtestActivateSapling, RegtestActivateCanopy};
-    void (*deactivations [])() = {RegtestDeactivateSapling, RegtestDeactivateCanopy};
+    const Consensus::Params& (*activations [])() = {RegtestActivateSapling, RegtestActivateZip212};
+    void (*deactivations [])() = {RegtestDeactivateSapling, RegtestDeactivateZip212};
 
     for (int ver = 0; ver < zip_212_enabled.size(); ver++) {
         auto consensusParams = (*activations[ver])();
@@ -1069,8 +1069,8 @@ TEST(WalletTests, SpentSaplingNoteIsFromMe) {
     SelectParams(CBaseChainParams::REGTEST);
 
     std::vector<libzcash::Zip212Enabled> zip_212_enabled = {libzcash::Zip212Enabled::BeforeZip212, libzcash::Zip212Enabled::AfterZip212};
-    const Consensus::Params& (*activations [])() = {RegtestActivateSapling, RegtestActivateCanopy};
-    void (*deactivations [])() = {RegtestDeactivateSapling, RegtestDeactivateCanopy};
+    const Consensus::Params& (*activations [])() = {RegtestActivateSapling, RegtestActivateZip212};
+    void (*deactivations [])() = {RegtestDeactivateSapling, RegtestDeactivateZip212};
 
     for (int ver = 0; ver < zip_212_enabled.size(); ver++) {
         auto consensusParams = (*activations[ver])();

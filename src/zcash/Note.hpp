@@ -43,22 +43,22 @@ public:
 };
 
 inline bool plaintext_version_is_valid(const Consensus::Params& params, int height, unsigned char leadbyte) {
-    int canopyActivationHeight = params.vUpgrades[Consensus::UPGRADE_CANOPY].nActivationHeight;
+    int zip212ActivationHeight = params.vUpgrades[Consensus::UPGRADE_ZIP212].nActivationHeight;
 
-    if (height < canopyActivationHeight && leadbyte != 0x01) {
-        // non-0x01 received before Canopy activation height
+    if (height < zip212ActivationHeight && leadbyte != 0x01) {
+        // non-0x01 received before Zip212 activation height
         return false;
     }
-    if (height >= canopyActivationHeight
-        && height < canopyActivationHeight + ZIP212_GRACE_PERIOD
+    if (height >= zip212ActivationHeight
+        && height < zip212ActivationHeight + ZIP212_GRACE_PERIOD
         && leadbyte != 0x01
         && leadbyte != 0x02)
     {
-        // non-{0x01,0x02} received after Canopy activation and before grace period has elapsed
+        // non-{0x01,0x02} received after Zip212 activation and before grace period has elapsed
         return false;
     }
-    if (height >= canopyActivationHeight + ZIP212_GRACE_PERIOD && leadbyte != 0x02) {
-        // non-0x02 received past (Canopy activation height + grace period)
+    if (height >= zip212ActivationHeight + ZIP212_GRACE_PERIOD && leadbyte != 0x02) {
+        // non-0x02 received past (Zip212 activation height + grace period)
         return false;
     }
     return true;
