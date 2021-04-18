@@ -2968,7 +2968,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
             ReadBlockFromDisk(block, pindex,1);
             BOOST_FOREACH(CTransaction& tx, block.vtx)
             {
-                if (AddToWalletIfInvolvingMe(tx, &block, pindex->nHeight, fUpdate)) {
+                if (AddToWalletIfInvolvingMe(tx, &block, pindex->GetHeight(), fUpdate)) {
                     myTxHashes.push_back(tx.GetHash());
                     ret++;
                 }
