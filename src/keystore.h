@@ -107,6 +107,16 @@ public:
         libzcash::SaplingIncomingViewingKey& ivkOut) const =0;
     virtual void GetSaplingPaymentAddresses(std::set<libzcash::SaplingPaymentAddress> &setAddress) const =0;
 
+    //! Sapling diversified addfresses
+    virtual bool AddSaplingDiversifiedAddess(
+        const libzcash::SaplingPaymentAddress &addr,
+        const libzcash::SaplingIncomingViewingKey &ivk,
+        const blob88 &path) =0;
+
+    virtual bool AddLastDiversifierUsed(
+        const libzcash::SaplingIncomingViewingKey &ivk,
+        const blob88 &path) =0;
+
     //! Support for Sprout viewing keys
     virtual bool AddSproutViewingKey(const libzcash::SproutViewingKey &vk) =0;
     virtual bool RemoveSproutViewingKey(const libzcash::SproutViewingKey &vk) =0;
@@ -130,6 +140,12 @@ typedef std::map<libzcash::SaplingIncomingViewingKey, libzcash::SaplingFullViewi
 // Only maps from default addresses to ivk, may need to be reworked when adding diversified addresses. 
 typedef std::map<libzcash::SaplingPaymentAddress, libzcash::SaplingIncomingViewingKey> SaplingIncomingViewingKeyMap;
 
+//diversified addresses
+typedef std::pair<libzcash::SaplingIncomingViewingKey, blob88> DiversifierPath;
+typedef std::map<libzcash::SaplingPaymentAddress, DiversifierPath> SaplingPaymentAddresses;
+
+typedef std::map<libzcash::SaplingIncomingViewingKey, blob88> LastDiversifierPath;
+
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore
 {
@@ -145,6 +161,8 @@ protected:
     SaplingSpendingKeyMap mapSaplingSpendingKeys;
     SaplingFullViewingKeyMap mapSaplingFullViewingKeys;
     SaplingIncomingViewingKeyMap mapSaplingIncomingViewingKeys;
+    SaplingPaymentAddresses mapSaplingPaymentAddresses;
+    LastDiversifierPath mapLastDiversifierPath;
 
 public:
     bool SetHDSeed(const HDSeed& seed);
@@ -313,6 +331,16 @@ public:
             }
         }
     }
+
+    //! Sapling diversified addfresses
+    virtual bool AddSaplingDiversifiedAddess(
+        const libzcash::SaplingPaymentAddress &addr,
+        const libzcash::SaplingIncomingViewingKey &ivk,
+        const blob88 &path);
+
+    virtual bool AddLastDiversifierUsed(
+        const libzcash::SaplingIncomingViewingKey &ivk,
+        const blob88 &path);
 
     virtual bool AddSproutViewingKey(const libzcash::SproutViewingKey &vk);
     virtual bool RemoveSproutViewingKey(const libzcash::SproutViewingKey &vk);

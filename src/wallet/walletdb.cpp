@@ -21,6 +21,7 @@
 #include "wallet/walletdb.h"
 
 #include "consensus/validation.h"
+#include "keystore.h"
 #include "key_io.h"
 #include "main.h"
 #include "protocol.h"
@@ -200,6 +201,25 @@ bool CWalletDB::WriteSaplingPaymentAddress(
     nWalletDBUpdated++;
 
     return Write(std::make_pair(std::string("sapzaddr"), addr), ivk, false);
+}
+
+bool CWalletDB::WriteSaplingDiversifiedAddress(
+    const libzcash::SaplingPaymentAddress &addr,
+    const libzcash::SaplingIncomingViewingKey &ivk,
+    const blob88 &path)
+{
+    nWalletDBUpdated++;
+
+    return Write(std::make_pair(std::string("sapzdivaddr"), addr), std::make_pair(ivk, path));
+}
+
+bool CWalletDB::WriteLastDiversifierUsed(
+    const libzcash::SaplingIncomingViewingKey &ivk,
+    const blob88 &path)
+{
+    nWalletDBUpdated++;
+
+    return Write(std::make_pair(std::string("sapzlastdiv"), ivk), path);
 }
 
 bool CWalletDB::WriteSproutViewingKey(const libzcash::SproutViewingKey &vk)
@@ -775,6 +795,31 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             wss.nSapZAddrs++;
 
             if (!pwallet->LoadSaplingPaymentAddress(addr, ivk))
+            {
+                strErr = "Error reading wallet database: LoadSaplingPaymentAddress failed";
+                return false;
+            }
+        }
+        else if (strType == "sapzdivaddr")
+        {
+            libzcash::SaplingPaymentAddress addr;
+            ssKey >> addr;
+            DiversifierPath dPath;
+            ssValue >> dPath;
+
+            if (!pwallet->LoadSaplingDiversifiedAddess(addr, dPath.first, dPath.second))
+            {
+                strErr = "Error reading wallet database: LoadSaplingPaymentAddress failed";
+                return false;
+            }
+        }else if (strType == "sapzlastdiv")
+        {
+            libzcash::SaplingIncomingViewingKey ivk;
+            ssKey >> ivk;
+            blob88 path;
+            ssValue >> path;
+
+            if (!pwallet->LoadLastDiversifierUsed(ivk, path))
             {
                 strErr = "Error reading wallet database: LoadSaplingPaymentAddress failed";
                 return false;
