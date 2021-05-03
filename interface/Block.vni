@@ -1,0 +1,19 @@
+package pirate;
+
+class Block {
+	
+	int height;
+	int version;
+	
+	uint time;
+	
+	uchar hash[32];
+	uchar prev_hash[32];
+	uchar next_hash[32];
+	
+	block_status_e status;
+	
+	uint num_tx;
+	ulong num_chain_tx;
+	
+}

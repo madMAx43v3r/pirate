@@ -1,0 +1,17 @@
+package pirate;
+
+interface RPC_Interface {
+	
+	double get_balance(string addr, int min_conf = 1) const;
+	
+	double get_total_balance(int min_conf = 1) const;
+	
+	string get_new_address() const;
+	
+	vector<string> list_addresses() const;
+	
+	vector<received_t> list_received_by_address(string addr, int min_conf = 1) const;
+	
+	void send_many(string from_addr, vector<pair<string, double>> amounts, int min_conf = 1, double fee = 0.0001) async;
+	
+}

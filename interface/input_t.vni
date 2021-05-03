@@ -1,0 +1,13 @@
+package pirate;
+
+struct input_t {
+	
+	string address;
+	
+	string prev_txid;
+	
+	double value;
+	
+	long amount;
+	
+}

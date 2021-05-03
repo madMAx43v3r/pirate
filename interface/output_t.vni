@@ -1,0 +1,15 @@
+package pirate;
+
+struct output_t {
+	
+	string address;
+	
+	double value;
+	
+	long amount;
+	
+	string memo;
+	
+	bool is_recovered;
+	
+}

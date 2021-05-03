@@ -1,0 +1,16 @@
+package pirate;
+
+class Transaction {
+	
+	int version;
+	
+	uchar txid[32];
+	
+	double value_in;
+	double value_out;
+	double value_balance;
+	
+	vector<input_t> inputs;
+	vector<output_t> outputs;
+	
+}

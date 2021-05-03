@@ -1,0 +1,7 @@
+package pirate;
+
+module RPC_Module implements RPC_Interface {
+	
+	
+	
+}

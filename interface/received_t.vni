@@ -1,0 +1,15 @@
+package pirate;
+
+struct received_t {
+	
+	string txid;
+	
+	double value;
+	
+	long amount;
+	
+	bool is_change;
+	
+	string memo;
+	
+}

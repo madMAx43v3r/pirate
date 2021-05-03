@@ -1,0 +1,8 @@
+package pirate;
+
+enum block_status_e {
+	
+	BLOCK_VALID,
+	BLOCK_FAILED
+	
+}
